@@ -68,7 +68,7 @@
             request.ContentLength = formRequest.Length;
             request.GetRequestStream().Write(formRequest, 0, formRequest.Length);
             request.AllowAutoRedirect = false;
-            request.Referer = form.OriginalUrl;
+            //request.Referer = form.OriginalUrl;
 
             return call.MakeRequest();
         }

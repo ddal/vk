@@ -20,7 +20,7 @@
             foreach (Cookie cookie in cookies)
                 Container.Add(responseUrl, cookie);
 
-            BugFixCookieDomain();
+            //BugFixCookieDomain();
         }
 
         private void BugFixCookieDomain()

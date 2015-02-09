@@ -13,6 +13,7 @@
     using Exception;
     using Utils;
     using Enums.Filters;
+    using System.Net;
 
     /// <summary>
     /// API для работы с ВКонтакте. Выступает в качестве фабрики для различных категорий API (например, для работы с пользователями, 
@@ -70,10 +71,14 @@
         /// API для работы с видеофайлами.
         /// </summary>
         public VideoCategory Video { get; private set; }
-		/// <summary>
-		/// API для работы с аккаунтом пользователя.
-		/// </summary>
-		public AccountCategory Account { get; private set; }
+        /// <summary>
+        /// API для работы с аккаунтом пользователя.
+        /// </summary>
+        public AccountCategory Account { get; private set; }
+        /// <summary>
+        /// API для работы с "лайками".
+        /// </summary>
+        public LikesCategory Likes { get; private set; }
         /// <summary>
         /// API для работы с фотографиями
         /// </summary>
@@ -100,6 +105,8 @@
         /// </summary>
         public VkApi()
         {
+            ServicePointManager.ServerCertificateValidationCallback = new PositiveCertificatePolicy().ServerCertificateValidationCallback;
+
             Browser = new Browser();
 
             Users = new UsersCategory(this);
@@ -113,7 +120,8 @@
             Utils = new UtilsCategory(this);
             Fave = new FaveCategory(this);
             Video = new VideoCategory(this);
-			Account = new AccountCategory(this);
+            Account = new AccountCategory(this);
+            Likes = new LikesCategory(this);
             Photo = new PhotoCategory(this);
         }
 
@@ -172,29 +180,29 @@
         }
 #endif
         
-		[MethodImpl(MethodImplOptions.NoInlining)]
-	    internal VkResponse Call(string methodName, VkParameters parameters, bool skipAuthorization = false, string apiVersion = null)
-	    {
-		    if (!parameters.ContainsKey("v"))
-		    {
-			    if (!string.IsNullOrEmpty(apiVersion))
-					parameters.Add("v", apiVersion);
-				else
-				{
-					//TODO: WARN: раскомментировать после добавления аннотаций ко всем методам
-					//throw new InvalidParameterException("You must use ApiVersionAttribute except adding \"v\" parameter to VkParameters");
-				}
-		    }
-		    else
-		    {
-				//TODO: WARN: раскомментировать, исправив ошибки в существующем коде
-				//throw new InvalidParameterException("You must use ApiVersionAttribute except adding \"v\" parameter to VkParameters");
-		    }
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        internal VkResponse Call(string methodName, VkParameters parameters, bool skipAuthorization = false, string apiVersion = null)
+        {
+            if (!parameters.ContainsKey("v"))
+            {
+                if (!string.IsNullOrEmpty(apiVersion))
+                    parameters.Add("v", apiVersion);
+                else
+                {
+                    //TODO: WARN: раскомментировать после добавления аннотаций ко всем методам
+                    //throw new InvalidParameterException("You must use ApiVersionAttribute except adding \"v\" parameter to VkParameters");
+                }
+            }
+            else
+            {
+                //TODO: WARN: раскомментировать, исправив ошибки в существующем коде
+                //throw new InvalidParameterException("You must use ApiVersionAttribute except adding \"v\" parameter to VkParameters");
+            }
 
-			return Call(methodName, parameters, skipAuthorization);
-	    }
+            return Call(methodName, parameters, skipAuthorization);
+        }
 
-	    private VkResponse Call(string methodName, VkParameters parameters,  bool skipAuthorization = false)
+        private VkResponse Call(string methodName, VkParameters parameters,  bool skipAuthorization = false)
         {
             string answer = Invoke(methodName, parameters, skipAuthorization);
 
